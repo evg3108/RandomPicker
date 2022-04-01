@@ -1,0 +1,170 @@
+* {
+    padding: 0;
+    margin: 0;
+
+}
+
+.App {
+    height: available;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    background-image: url("background.jpg");
+}
+
+.EditButton {
+    width: 25px;
+    height: 25px;
+    border: none;
+    background: transparent url("pencil-icon-small.png") no-repeat center;
+}
+
+button:hover {
+    border: 2px solid teal;
+    border-radius: 5px;
+}
+
+.DeleteButton {
+    width: 25px;
+    height: 25px;
+    border: none;
+    background: transparent url("trash-bin-icon-small.png") no-repeat center;
+}
+
+.ListBox {
+    margin-bottom: 15px;
+    align-items: center;
+    display: inline-block;
+}
+
+.List {
+    margin: 10px;
+    padding: 4px;
+    width: 270px;
+    height: 400px;
+    text-align: center;
+    display: inline-table;
+    border: 3px solid #1d5f5f;
+    border-radius: 12px;
+    background-color: azure;
+}
+
+.RandomOutputField {
+    margin: 10px;
+    padding: 4px;
+    width: 270px;
+    height: 40px;
+    font-family: Comic Sans MS, Arial;
+    display: flex;
+    justify-content: space-between;
+    vertical-align: center;
+    background-color: azure;
+    border: 3px solid #1d5f5f;
+    border-radius: 10px;
+}
+
+.Title {
+    margin: 5px;
+    padding: 3px;
+    font-family: Comic Sans MS, Arial;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid teal;
+}
+
+.EntryField {
+    margin: 5px;
+    padding: 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.TextInput {
+    border: none;
+    border-bottom: 2px solid teal;
+    background: transparent;
+}
+
+.SubmitForm {
+    width: 100%;
+    margin-top: 5px;
+    text-align: left;
+    display: inline;
+}
+
+.XButton {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    border: solid 1px teal;
+    background: transparent;
+}
+
+.ButtonWithText {
+    padding-left: 2px;
+    padding-right: 2px;
+    display: inline;
+    background: transparent;
+    border-color: teal;
+    border-radius: 5px;
+    font-family: Comic Sans MS;
+}
+
+.PlusButton {
+    margin: 45px;
+    width: 48px;
+    height: 48px;
+    border-radius: 5px;
+    border: solid 2px #1d5f5f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    background: url("5957006_add_create_new_plus_icon.png") azure no-repeat center;
+}
+
+.CreateAList {
+    margin: 15px;
+    padding: 5px;
+    height: 400px;
+    text-align: center;
+    align-items: center;
+    display: inline-block;
+}
+
+.App-logo {
+    height: 40vmin;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .App-logo {
+        animation: App-logo-spin infinite 20s linear;
+    }
+}
+
+.App-header {
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
+}
+
+.App-link {
+    color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
