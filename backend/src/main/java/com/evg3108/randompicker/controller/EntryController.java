@@ -11,88 +11,78 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/entry")
+@RequestMapping("/entries")
 public class EntryController {
 
     List<Group> groups = GroupRepository.getListOfGroups();
 
     @PostMapping("/create")
     public ResponseEntity<Entry> createEntry(@RequestBody EntryRequest request) {
-        Group foundGroup;
+        Group foundGroup = GroupRepository.findGroupById(request.groupID);
         Entry createdEntry = new Entry(request.title, request.groupID);
-        try{
-            foundGroup = groups.get(request.groupID);
+        try {
             foundGroup.addEntry(createdEntry);
-        } catch (IndexOutOfBoundsException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Requested group not found");
+            return ResponseEntity.ok(createdEntry);
+        } catch (NullPointerException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group not found");
         }
-
-        return ResponseEntity.ok(createdEntry);
     }
 
-    @GetMapping()
-    public ResponseEntity<Entry> getEntry (@RequestParam("id") int id,
-                                           @RequestParam("groupID") int groupID){
-        Group foundGroup;
+    @GetMapping("/get")
+    public ResponseEntity<Entry> getEntry(@RequestParam("id") long id,
+                                          @RequestParam("groupID") long groupID) {
+        Group foundGroup = GroupRepository.findGroupById(groupID);
         Entry foundEntry;
-        try{
-            foundGroup = groups.get(groupID);
-            try {
-                foundEntry = foundGroup.getEntries().get(id);
-            } catch (IndexOutOfBoundsException e){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Requested entry not found");
-            }
-        } catch (IndexOutOfBoundsException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Requested group not found");
+        try {
+            foundEntry = foundGroup.findEntryById(id);
+            return ResponseEntity.ok(foundEntry);
+        } catch (NullPointerException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entry not found");
         }
-        return ResponseEntity.ok(foundEntry);
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<Entry> editEntry (@RequestBody EntryRequest request){
-        Group foundGroup;
+    public ResponseEntity<Entry> editEntry(@RequestBody EntryRequest request) {
+        Group foundGroup = GroupRepository.findGroupById(request.groupID);
         Entry foundEntry;
-        try{
-            foundGroup = groups.get(request.groupID);
-            try{
-                foundEntry = foundGroup.getEntries().get(request.id);
-                foundEntry.setTitle(request.title);
-            } catch(IndexOutOfBoundsException e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entry with id=" + request.id + " not found");
-            }
-        } catch (IndexOutOfBoundsException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group with id=" + request.groupID + " not found");
+        try {
+            foundEntry = foundGroup.findEntryById(request.id);
+            foundEntry.setTitle(request.title);
+            return ResponseEntity.ok(foundEntry);
+        } catch (NullPointerException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entry not found");
         }
-        return ResponseEntity.ok(foundEntry);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Group> deleteEntry (@RequestBody EntryRequest request){
-        Group foundGroup;
-        try{
-            foundGroup = groups.get(request.groupID);
-            try{
-                foundGroup.getEntries().remove(request.id);
-            } catch (IndexOutOfBoundsException e){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entry with id=" + request.id + " not found");
-            }
-        } catch (IndexOutOfBoundsException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group with id=" + request.groupID + " not found");
+    public ResponseEntity<Group> deleteEntry(@RequestBody EntryRequest request) {
+        Group foundGroup = GroupRepository.findGroupById(request.groupID);
+        Entry entryToDelete;
+        try {
+            entryToDelete = foundGroup.findEntryById(request.id);
+            foundGroup.getEntries().remove(entryToDelete);
+            return ResponseEntity.ok(foundGroup);
+        } catch (NullPointerException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entry not found");
         }
-        return ResponseEntity.ok(foundGroup);
     }
 
     public static class EntryRequest {
 
-        private int id;
-
+        private long id;
         private String title;
+        private long groupID;
 
-        private int groupID;
+        public long getId() {
+            return id;
+        }
 
         public String getTitle() {
             return title;
         }
 
+        public long getGroupID() {
+            return groupID;
+        }
     }
 }

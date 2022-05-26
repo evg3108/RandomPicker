@@ -1,12 +1,11 @@
 package com.evg3108.randompicker.model;
 
-import com.evg3108.randompicker.model.Entry;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Group {
 
-    private static long idCounter = 0;
+    private static long idCounter = 1;
 
     private long id;
     private String title;
@@ -35,6 +34,15 @@ public class Group {
 
     public void addEntry(Entry entry){
         entries.add(entry);
+    }
+
+    public Entry findEntryById(long id){
+        for(Entry entry : entries){
+            if(entry.getId()==id){
+                return entry;
+            }
+        }
+        return null;
     }
 
     @Override

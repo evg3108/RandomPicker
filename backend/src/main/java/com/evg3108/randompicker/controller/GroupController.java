@@ -6,10 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @RestController
-@RequestMapping("/group")
+@RequestMapping("/groups")
 public class GroupController {
 
     List<Group> groups = GroupRepository.getListOfGroups();
@@ -17,48 +18,53 @@ public class GroupController {
     @PostMapping("/create")
     public ResponseEntity<Group> createGroup(@RequestBody GroupRequest request) {
         Group createdGroup = new Group(request.title);
-        groups.add(createdGroup);
+        GroupRepository.addNewGroup(createdGroup);
         return ResponseEntity.ok(createdGroup);
     }
 
     @GetMapping("/get")
-    public ResponseEntity<Group> getGroupById(@RequestParam("id") int id) {
-        System.out.println(id);
-        System.out.println(groups);
-        Group foundGroup = groups.get(id);
+    public ResponseEntity<Group> getGroup (@RequestParam("id") long id){
+        Group foundGroup = GroupRepository.findGroupById(id);
         return ResponseEntity.ok(foundGroup);
     }
 
     @GetMapping("/get-all")
-    public ResponseEntity<List<Group>> getListOfAllGroups() {
+    public ResponseEntity<List<Group>> getListOfGroups(){
         return ResponseEntity.ok(groups);
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<Group> editGroup(@RequestBody GroupRequest request) {
-        Group foundGroup;
-        try {
-            foundGroup = groups.get(request.id);
+    public ResponseEntity<Group> editGroup (@RequestBody GroupRequest request){
+        Group foundGroup = GroupRepository.findGroupById(request.id);
+        try{
             foundGroup.setTitle(request.title);
-        } catch (IndexOutOfBoundsException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group with id=" + request.id + " not found");
+            return ResponseEntity.ok(foundGroup);
+        } catch (NullPointerException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group not found");
         }
-        return ResponseEntity.ok(foundGroup);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<List<Group>> deleteGroup(@RequestParam("id") int id) {
-        try {
-            groups.remove(id);
-        } catch (IndexOutOfBoundsException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group with id=" + id + " not found");
+    public ResponseEntity<List<Group>> deleteGroup (@RequestParam("id") long id){
+        Group deletedGroup = GroupRepository.findGroupById(id);
+        if(groups.remove(deletedGroup)){
+            return ResponseEntity.ok(groups);
         }
-        return ResponseEntity.ok(groups);
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group not found");
     }
 
     public static class GroupRequest {
-        private int id;
+
+        private long id;
         private String title;
+
+        public String getTitle() {
+            return title;
+        }
+
+        public long getId() {
+            return id;
+        }
     }
 
 

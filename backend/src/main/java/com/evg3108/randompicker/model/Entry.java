@@ -2,7 +2,7 @@ package com.evg3108.randompicker.model;
 
 public class Entry {
 
-    private static long idCounter = 0;
+    private static long idCounter = 1;
 
     private long id;
     private long groupID;
@@ -12,6 +12,10 @@ public class Entry {
         this.groupID = groupID;
         this.id = idCounter++;
         this.title = title;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public long getGroupID() {
