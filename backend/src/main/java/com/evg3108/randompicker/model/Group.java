@@ -5,14 +5,18 @@ import java.util.List;
 
 public class Group {
 
-    private static long idCounter = 1;
-
     private long id;
     private String title;
     private List<Entry> entries = new ArrayList<>();
 
-    public Group(String title) {
-        this.id = idCounter++;
+    public Group(){}
+
+    public Group(String title){
+        this.title = title;
+    }
+
+    public Group(long id, String title){
+        this.id = id;
         this.title = title;
     }
 
@@ -30,6 +34,14 @@ public class Group {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setEntries(List<Entry> entries) {
+        this.entries = entries;
     }
 
     public void addEntry(Entry entry){

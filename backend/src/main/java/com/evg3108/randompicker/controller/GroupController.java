@@ -13,12 +13,9 @@ import java.util.List;
 @RequestMapping("/groups")
 public class GroupController {
 
-    List<Group> groups = GroupRepository.getListOfGroups();
-
     @PostMapping("/create")
     public ResponseEntity<Group> createGroup(@RequestBody GroupRequest request) {
-        Group createdGroup = new Group(request.title);
-        GroupRepository.addNewGroup(createdGroup);
+        Group createdGroup = GroupRepository.addNewGroup(request.title);
         return ResponseEntity.ok(createdGroup);
     }
 
@@ -29,28 +26,23 @@ public class GroupController {
     }
 
     @GetMapping("/get-all")
-    public ResponseEntity<List<Group>> getListOfGroups(){
-        return ResponseEntity.ok(groups);
+    public ResponseEntity<List<Group>> getListOfGroups() {
+        return ResponseEntity.ok(GroupRepository.getListOfGroups());
     }
 
     @PutMapping("/edit")
     public ResponseEntity<Group> editGroup (@RequestBody GroupRequest request){
-        Group foundGroup = GroupRepository.findGroupById(request.id);
-        try{
-            foundGroup.setTitle(request.title);
-            return ResponseEntity.ok(foundGroup);
-        } catch (NullPointerException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group not found");
-        }
+        Group group = new Group(request.id, request.title);
+        GroupRepository.editGroup(group);
+        return ResponseEntity.ok(group);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<List<Group>> deleteGroup (@RequestParam("id") long id){
-        Group deletedGroup = GroupRepository.findGroupById(id);
-        if(groups.remove(deletedGroup)){
-            return ResponseEntity.ok(groups);
+        if (GroupRepository.deleteGroup(id)){
+            return ResponseEntity.ok(GroupRepository.getListOfGroups());
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group not found");
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group doesn't exist");
     }
 
     public static class GroupRequest {

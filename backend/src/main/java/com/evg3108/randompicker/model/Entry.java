@@ -2,24 +2,30 @@ package com.evg3108.randompicker.model;
 
 public class Entry {
 
-    private static long idCounter = 1;
-
     private long id;
-    private long groupID;
+    private long groupId;
     private String title;
 
-    public Entry(String title, long groupID) {
-        this.groupID = groupID;
-        this.id = idCounter++;
+    public Entry(){}
+
+    public Entry(String title, long groupId) {
+        this.groupId = groupId;
         this.title = title;
     }
-
     public long getId() {
         return id;
     }
 
-    public long getGroupID() {
-        return groupID;
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(long groupId) {
+        this.groupId = groupId;
     }
 
     public String getTitle() {
