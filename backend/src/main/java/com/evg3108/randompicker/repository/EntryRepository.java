@@ -2,21 +2,48 @@ package com.evg3108.randompicker.repository;
 
 import com.evg3108.randompicker.model.Entry;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EntryRepository {
     private static Connection connection = ConnectionManager.getConnection();
 
-    public static boolean createEntry(String title, long groupId) {
+    public static boolean addNewEntry(String title, long groupId) {
         try {
-            Statement statement = connection.createStatement();
-            String query = "INSERT INTO entry (title, entry_group_id) VALUES ('" + title + "', " + groupId + ")";
-            statement.executeUpdate(query);
+            PreparedStatement statement = connection.prepareStatement(
+                    "INSERT INTO entry (title, entry_group_id) VALUES (?, ?)"
+            );
+            statement.setString(1, title);
+            statement.setLong(2, groupId);
+            statement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static Entry editEntry(long entryId, String newTitle) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE entry SET title=? WHERE id=?"
+            );
+            statement.setString(1, newTitle);
+            statement.setLong(2, entryId);
+            statement.executeUpdate();
+            return findEntryByID(entryId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static boolean deleteEntry(long id) {
+        try {
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM entry WHERE id=?");
+            statement.setLong(1, id);
+            statement.executeUpdate();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -26,17 +53,11 @@ public class EntryRepository {
 
     public static Entry findEntryByID(long id) {
         try {
-            Statement statement = connection.createStatement();
-            String query = "SELECT * FROM entry WHERE id=" + id;
-            ResultSet resultSet = statement.executeQuery(query);
-            Entry foundEntry = new Entry();
-            while (resultSet.next()) {
-                foundEntry.setId(resultSet.getLong("id"));
-                foundEntry.setTitle(resultSet.getString("title"));
-                foundEntry.setGroupId(resultSet.getLong("entry_group_id"));
-
-            }
-            return foundEntry;
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM entry WHERE id=?");
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            return extractEntry(resultSet);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -45,18 +66,9 @@ public class EntryRepository {
 
     public static List<Entry> findEntryByTitle(String title) {
         try {
-            Statement statement = connection.createStatement();
-            String query = "SELECT * FROM entry WHERE title='" + title + "'";
-            ResultSet resultSet = statement.executeQuery(query);
-            List<Entry> foundEntries = new ArrayList<>();
-            while (resultSet.next()) {
-                Entry foundEntry = new Entry();
-                foundEntry.setId(resultSet.getLong("id"));
-                foundEntry.setTitle(resultSet.getString("title"));
-                foundEntry.setGroupId(resultSet.getLong("entry_group_id"));
-                foundEntries.add(foundEntry);
-            }
-            return foundEntries;
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM entry WHERE title=?");
+            statement.setString(1, title);
+            return extractListOfEntries(statement);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -65,19 +77,40 @@ public class EntryRepository {
 
     public static List<Entry> findEntryByTitleAndGroupId(String title, long groupId) {
         try {
-            Statement statement = connection.createStatement();
-            String query = "SELECT * FROM entry WHERE title='" + title + "' AND entry_group_id=" + groupId;
-            ResultSet resultSet = statement.executeQuery(query);
+            PreparedStatement statement = connection.prepareStatement(
+                    "SELECT * FROM entry WHERE title=? AND entry_group_id=?"
+            );
+            statement.setString(1, title);
+            statement.setLong(2, groupId);
+            return extractListOfEntries(statement);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static List<Entry> extractListOfEntries(PreparedStatement statement){
+        try{
+            ResultSet resultSet = statement.executeQuery();
             List<Entry> foundEntries = new ArrayList<>();
             while (resultSet.next()) {
-                Entry foundEntry = new Entry();
-                foundEntry.setId(resultSet.getLong("id"));
-                foundEntry.setTitle(resultSet.getString("title"));
-                foundEntry.setGroupId(resultSet.getLong("entry_group_id"));
-                foundEntries.add(foundEntry);
+                foundEntries.add(extractEntry(resultSet));
             }
             return foundEntries;
         } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static Entry extractEntry(ResultSet resultSet){
+        try{
+            Entry entry = new Entry();
+            entry.setId(resultSet.getLong("id"));
+            entry.setTitle(resultSet.getString("title"));
+            entry.setGroupId(resultSet.getLong("entry_group_id"));
+            return entry;
+        } catch (SQLException e){
             e.printStackTrace();
             return null;
         }
