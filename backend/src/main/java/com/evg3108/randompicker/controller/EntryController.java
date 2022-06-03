@@ -2,7 +2,7 @@ package com.evg3108.randompicker.controller;
 
 import com.evg3108.randompicker.model.Entry;
 import com.evg3108.randompicker.model.Group;
-import com.evg3108.randompicker.repository.GroupRepository;
+import com.evg3108.randompicker.repository.EntryRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,54 +13,29 @@ import org.springframework.web.server.ResponseStatusException;
 public class EntryController {
 
     @PostMapping("/create")
-    public ResponseEntity<Entry> createEntry(@RequestBody EntryRequest request) {
-        Group foundGroup = GroupRepository.findGroupById(request.groupID);
-        Entry createdEntry = new Entry(request.title, request.groupID);
-        try {
-            foundGroup.addEntry(createdEntry);
-            return ResponseEntity.ok(createdEntry);
-        } catch (NullPointerException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group not found");
+    public ResponseEntity<Void> createEntry(@RequestBody EntryRequest request) {
+        if(EntryRepository.addNewEntry(request.getTitle(), request.getGroupID())){
+            return ResponseEntity.ok(null);
         }
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/get")
-    public ResponseEntity<Entry> getEntry(@RequestParam("id") long id,
-                                          @RequestParam("groupID") long groupID) {
-        Group foundGroup = GroupRepository.findGroupById(groupID);
-        Entry foundEntry;
-        try {
-            foundEntry = foundGroup.findEntryById(id);
-            return ResponseEntity.ok(foundEntry);
-        } catch (NullPointerException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entry not found");
-        }
+    public ResponseEntity<Entry> getEntry(@RequestParam("id") long id) {
+        return ResponseEntity.ok(EntryRepository.findEntryByID(id));
     }
 
     @PutMapping("/edit")
     public ResponseEntity<Entry> editEntry(@RequestBody EntryRequest request) {
-        Group foundGroup = GroupRepository.findGroupById(request.groupID);
-        Entry foundEntry;
-        try {
-            foundEntry = foundGroup.findEntryById(request.id);
-            foundEntry.setTitle(request.title);
-            return ResponseEntity.ok(foundEntry);
-        } catch (NullPointerException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entry not found");
-        }
+        return ResponseEntity.ok(EntryRepository.editEntry(request.getId(), request.getTitle()));
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Group> deleteEntry(@RequestBody EntryRequest request) {
-        Group foundGroup = GroupRepository.findGroupById(request.groupID);
-        Entry entryToDelete;
-        try {
-            entryToDelete = foundGroup.findEntryById(request.id);
-            foundGroup.getEntries().remove(entryToDelete);
-            return ResponseEntity.ok(foundGroup);
-        } catch (NullPointerException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entry not found");
+        if(EntryRepository.deleteEntry(request.id)){
+            return ResponseEntity.ok(null);
         }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 
     public static class EntryRequest {

@@ -32,9 +32,7 @@ public class GroupController {
 
     @PutMapping("/edit")
     public ResponseEntity<Group> editGroup (@RequestBody GroupRequest request){
-        Group group = new Group(request.id, request.title);
-        GroupRepository.editGroup(group);
-        return ResponseEntity.ok(group);
+        return ResponseEntity.ok(GroupRepository.editGroup(request.id, request.title));
     }
 
     @DeleteMapping("/delete")
