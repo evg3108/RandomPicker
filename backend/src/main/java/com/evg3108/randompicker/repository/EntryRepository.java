@@ -89,6 +89,19 @@ public class EntryRepository {
         }
     }
 
+    public static List<Entry> findEntriesByGroupId(long groupId) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "SELECT * FROM entry WHERE entry_group_id=?"
+            );
+            statement.setLong(1, groupId);
+            return extractListOfEntries(statement);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private static List<Entry> extractListOfEntries(PreparedStatement statement){
         try{
             ResultSet resultSet = statement.executeQuery();
