@@ -19,8 +19,8 @@ public class GroupController {
         return ResponseEntity.ok(createdGroup);
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<Group> getGroup (@RequestParam("id") long id){
+    @GetMapping("/{id}")
+    public ResponseEntity<Group> getGroup(@PathVariable long id) {
         Group foundGroup = GroupRepository.findGroupById(id);
         return ResponseEntity.ok(foundGroup);
     }

@@ -14,14 +14,14 @@ public class EntryController {
 
     @PostMapping("/create")
     public ResponseEntity<Void> createEntry(@RequestBody EntryRequest request) {
-        if(EntryRepository.addNewEntry(request.getTitle(), request.getGroupID())){
+        if (EntryRepository.addNewEntry(request.getTitle(), request.getGroupID())) {
             return ResponseEntity.ok(null);
         }
-         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<Entry> getEntry(@RequestParam("id") long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Entry> getEntry(@PathVariable long id) {
         return ResponseEntity.ok(EntryRepository.findEntryByID(id));
     }
 
@@ -31,8 +31,8 @@ public class EntryController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Group> deleteEntry(@RequestBody EntryRequest request) {
-        if(EntryRepository.deleteEntry(request.id)){
+    public ResponseEntity<Group> deleteEntry(@RequestParam("id") long id) {
+        if (EntryRepository.deleteEntry(id)) {
             return ResponseEntity.ok(null);
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);

@@ -10,16 +10,16 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
-public class GroupRepositoryTests {
+public class EntryRepositoryTests {
 
     @Autowired
     MockMvc mockMvc;
 
     @Test
-    void shouldCreateNewGroup() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/groups/create")
+    void shouldCreateNewEntry() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/entries/create")
                         .content("{\n" +
-                                "  \"id\": \"1\",\n" +
+                                "  \"groupID\": \"1\",\n" +
                                 "  \"title\": \"title\"\n" +
                                 "}")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -27,8 +27,8 @@ public class GroupRepositoryTests {
     }
 
     @Test
-    void shouldEditExistingGroup() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.put("/groups/edit")
+    void shouldEditExistingEntry() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/entries/edit")
                         .content("{\n" +
                                 "  \"id\": \"1\",\n" +
                                 "  \"title\": \"new title\"\n" +
@@ -38,14 +38,14 @@ public class GroupRepositoryTests {
     }
 
     @Test
-    void shouldDeleteGroup() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/groups/delete?id=1"))
+    void shouldFindEntryById() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/entries/1"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void shouldFindGroupById() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/groups/1"))
+    void shouldDeleteEntry() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/entries/delete?id=1"))
                 .andExpect(status().isOk());
     }
 
